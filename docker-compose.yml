@@ -1,0 +1,35 @@
+name: eeg-monitor
+
+services:
+  timescale:
+    image: timescale/timescaledb:2.19.2-pg17
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: eeg_monitor
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  lsl-receiver:
+    build: ./lsl-receiver
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:password@timescale:5432/eeg_monitor
+    depends_on:
+      - timescale
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: password
+    depends_on:
+      - timescale
+
+volumes:
+  timescale_data:

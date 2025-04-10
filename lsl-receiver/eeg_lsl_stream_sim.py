@@ -3,7 +3,7 @@ from pylsl import StreamInfo, StreamOutlet  # pip install pylsl
 import time
 
 # Load data
-data_dir = "000_000.tsv"
+data_dir = "../000_000.tsv"
 df = pd.read_csv(data_dir, sep="\t")
 
 # Create stream

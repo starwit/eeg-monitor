@@ -11,6 +11,8 @@ package-mode = false
 python = "^3.10"
 pylsl = "^1.17.6"
 pandas = "^2.2.3"
+psycopg = "^3.2.6"
+dotenv = "^0.9.9"
 
 
 [build-system]
