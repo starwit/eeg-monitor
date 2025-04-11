@@ -47,7 +47,12 @@ columns = [
     "f4", "f8", "fp2", "x_dir", "y_dir", "z_dir", "mkidx"
 ]
 
+# Batch size for processing chunks of data
+BATCH_SIZE = 32  # Adjust based on your data rate and system capabilities
+CHUNK_SIZE = BATCH_SIZE  # Set chunk size to match batch size
+
 print(f"Connected to EEG stream. Starting to record data to PostgreSQL database...")
+print(f"Using batch size of {BATCH_SIZE} samples")
 print("Press Ctrl+C to stop recording")
 
 try:
@@ -58,37 +63,65 @@ try:
         
         # Create a cursor
         with conn.cursor() as cur:
+            # Prepare SQL query - done once outside the loop
+            column_str = ", ".join(["timestamp"] + columns)
+            placeholders = ", ".join(["%s"] * (len(columns) + 1))
+            sql = f"INSERT INTO eeg_data ({column_str}) VALUES ({placeholders})"
+            
             while running:
                 try:
-                    sample, timestamp = inlet.pull_sample(timeout=0.5)  # Add timeout to check running flag periodically
+                    # Pull chunks of samples at once
+                    samples, timestamps = inlet.pull_chunk(max_samples=CHUNK_SIZE, timeout=0.5)
                     
-                    # If no new sample available during timeout, continue checking running flag
-                    if sample is None:
+                    # If no new samples available during timeout, continue checking running flag
+                    if not samples or len(samples) == 0:
                         continue
-                        
+                    
+                    batch_data = []  # Collect data for batch insert
+                    
+                    # Get the current time for the last sample in the chunk
                     current_time = datetime.datetime.now(datetime.timezone.utc)
                     
-                    # Check if sample length matches columns length
-                    if len(sample) != len(columns):
-                        print(f"Warning: Sample length ({len(sample)}) doesn't match expected column count ({len(columns)})")
-                        continue
+                    # Calculate the time delta between samples
+                    if len(timestamps) > 1:
+                        # If we have multiple timestamps, calculate precise timing for each sample
+                        # The last timestamp corresponds to current_time
+                        last_timestamp = timestamps[-1]
+                        
+                        # Process each sample with its own timestamp
+                        for i, (sample, ts) in enumerate(zip(samples, timestamps)):
+                            # Check if sample length matches columns length
+                            if len(sample) != len(columns):
+                                print(f"Warning: Sample length ({len(sample)}) doesn't match expected column count ({len(columns)})")
+                                continue
+                            
+                            # Calculate the precise timestamp for this sample
+                            # Time difference in seconds from the last sample
+                            time_delta = last_timestamp - ts
+                            # Convert to timedelta and subtract from current_time
+                            sample_time = current_time - datetime.timedelta(seconds=time_delta)
+                            
+                            # Prepare data with precise timestamp for each sample
+                            data = [sample_time] + sample
+                            batch_data.append(data)
+                    else:
+                        # If there's only one sample, use current_time
+                        sample = samples[0]
+                        if len(sample) != len(columns):
+                            print(f"Warning: Sample length ({len(sample)}) doesn't match expected column count ({len(columns)})")
+                        else:
+                            data = [current_time] + sample
+                            batch_data.append(data)
                     
-                    # Prepare SQL query
-                    column_str = ", ".join(["timestamp"] + columns)
-                    # Use positional parameters for psycopg3
-                    placeholders = ", ".join(["%s"] * (len(columns) + 1))
-                    sql = f"INSERT INTO eeg_data ({column_str}) VALUES ({placeholders})"
-                    
-                    # Prepare data with current timestamp
-                    data = [current_time] + sample
-                    
-                    # Execute the query
-                    cur.execute(sql, data)
-                    conn.commit()
-                    
-                    print(f"Inserted data at {current_time}")
+                    if batch_data:
+                        # Execute batch insert
+                        cur.executemany(sql, batch_data)
+                        conn.commit()
+                        
+                        print(f"Inserted batch of {len(batch_data)} samples at {current_time}")
+                
                 except Exception as e:
-                    print(f"Error processing sample: {e}")
+                    print(f"Error processing samples: {e}")
                     conn.rollback()
                     if not running:
                         break

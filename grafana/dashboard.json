@@ -1,0 +1,170 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "panels": [
+      {
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "beilskehcbev4b"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 28,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 1,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "grafana-postgresql-datasource",
+              "uid": "ceiignqams0lca"
+            },
+            "editorMode": "code",
+            "format": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT \n  time_bucket('50ms', timestamp) as bucket, \n  AVG(fp1) as fp1,\n  AVG(fz) as fz,\n  AVG(f3) as f3,\n  AVG(f7) as f7,\n  AVG(ft9) as ft9,\n  AVG(fc5) as fc5,\n  AVG(fc1) as fc1,\n  AVG(c3) as c3,\n  AVG(t7) as t7,\n  AVG(tp9) as tp9,\n  AVG(cp5) as cp5,\n  AVG(cp1) as cp1,\n  AVG(pz) as pz,\n  AVG(p3) as p3,\n  AVG(p7) as p7,\n  AVG(o1) as o1,\n  AVG(oz) as oz,\n  AVG(o2) as o2,\n  AVG(p4) as p4,\n  AVG(p8) as p8,\n  AVG(tp10) as tp10,\n  AVG(cp6) as cp6,\n  AVG(cp2) as cp2,\n  AVG(cz) as cz,\n  AVG(c4) as c4,\n  AVG(t8) as t8,\n  AVG(ft10) as ft10,\n  AVG(fc6) as fc6,\n  AVG(fc2) as fc2,\n  AVG(f4) as f4,\n  AVG(f8) as f8,\n  AVG(fp2) as fp2\nFROM eeg_data \nWHERE $__timeFilter(timestamp)\nGROUP BY bucket;",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [
+                    {
+                      "name": "*",
+                      "type": "functionParameter"
+                    }
+                  ],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            },
+            "table": "eeg_data"
+          }
+        ],
+        "title": "EEG Data",
+        "type": "timeseries"
+      }
+    ],
+    "preload": false,
+    "refresh": "",
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-2m",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "100ms",
+        "200ms",
+        "500ms",
+        "1s",
+        "2s",
+        "5s",
+        "10s"
+      ]
+    },
+    "timezone": "browser",
+    "title": "EEG",
+    "uid": "aeijwyh4nnu9sb",
+    "version": 3
+  }
