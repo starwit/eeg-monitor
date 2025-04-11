@@ -1,6 +1,6 @@
 -- Create table for EEG data
 CREATE TABLE eeg_data (
-    timestamp TIMESTAMP PRIMARY KEY,
+    timestamp TIMESTAMPTZ PRIMARY KEY,
     fp1 DOUBLE PRECISION,
     fz DOUBLE PRECISION,
     f3 DOUBLE PRECISION,

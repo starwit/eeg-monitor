@@ -2,7 +2,22 @@ from pylsl import StreamInlet, resolve_byprop
 import psycopg
 import datetime
 import os
+import signal
+import sys
 from dotenv import load_dotenv
+
+# Flag to indicate if the program should continue running
+running = True
+
+# Signal handler function
+def signal_handler(sig, frame):
+    global running
+    print(f"\nReceived signal {sig}. Shutting down gracefully...")
+    running = False
+
+# Register signal handlers
+signal.signal(signal.SIGINT, signal_handler)  # Handle Ctrl+C
+signal.signal(signal.SIGTERM, signal_handler) # Handle termination signal
 
 # Load environment variables from .env file if it exists
 load_dotenv()
@@ -33,6 +48,7 @@ columns = [
 ]
 
 print(f"Connected to EEG stream. Starting to record data to PostgreSQL database...")
+print("Press Ctrl+C to stop recording")
 
 try:
     # Connect to the PostgreSQL database using psycopg3 connection string
@@ -42,10 +58,15 @@ try:
         
         # Create a cursor
         with conn.cursor() as cur:
-            while True:
+            while running:
                 try:
-                    sample, timestamp = inlet.pull_sample()
-                    current_time = datetime.datetime.now()
+                    sample, timestamp = inlet.pull_sample(timeout=0.5)  # Add timeout to check running flag periodically
+                    
+                    # If no new sample available during timeout, continue checking running flag
+                    if sample is None:
+                        continue
+                        
+                    current_time = datetime.datetime.now(datetime.timezone.utc)
                     
                     # Check if sample length matches columns length
                     if len(sample) != len(columns):
@@ -69,6 +90,13 @@ try:
                 except Exception as e:
                     print(f"Error processing sample: {e}")
                     conn.rollback()
+                    if not running:
+                        break
+            
+            print("Recording stopped. Closing database connection...")
                     
 except Exception as e:
     print(f"Database connection error: {e}")
+finally:
+    print("EEG recording terminated")
+    sys.exit(0)

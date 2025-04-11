@@ -10,6 +10,7 @@ df = pd.read_csv(data_dir, sep="\t")
 info = StreamInfo("EEG_Stream", 'eeg', 36, 500, 'float32', 'testEEGStream')
 outlet = StreamOutlet(info)
 
-for index, row in df.iterrows():
-    outlet.push_sample(row.iloc[1:].tolist())
-    time.sleep(1 / 500)
+while True:
+    for index, row in df.iterrows():
+        outlet.push_sample(row.iloc[1:].tolist())
+        time.sleep(1 / 500)
