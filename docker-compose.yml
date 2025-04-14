@@ -18,7 +18,11 @@ services:
     restart: unless-stopped
     network_mode: host
     environment:
-      - DATABASE_URL=postgres://postgres:password@timescale:5432/eeg_monitor
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: password
+      DB_NAME: eeg_monitor
     depends_on:
       - timescale
 
