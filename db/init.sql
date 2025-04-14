@@ -40,4 +40,7 @@ CREATE TABLE eeg_data (
 );
 
 -- Convert the table to a TimescaleDB hypertable
-SELECT create_hypertable('eeg_data', by_range('timestamp'));
+SELECT create_hypertable('eeg_data', by_range('timestamp', INTERVAL '10 minutes'));
+
+-- Add a retention policy to the hypertable to make sure that data older than 120 minutes is automatically dropped
+SELECT add_retention_policy('eeg_data', drop_after => INTERVAL '120 minutes', schedule_interval => INTERVAL '10 minutes');
