@@ -13,6 +13,6 @@ WORKDIR /code
 COPY poetry.lock poetry.toml pyproject.toml ./
 RUN poetry install
 
-COPY ./*.py .
+COPY ./main.py .
 
-ENTRYPOINT [ "poetry", "run", "python", "eeg_lsl_receive.py" ]
+ENTRYPOINT [ "poetry", "run", "python", "main.py" ]

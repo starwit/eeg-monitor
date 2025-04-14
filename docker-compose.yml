@@ -26,6 +26,14 @@ services:
     depends_on:
       - timescale
 
+  lsl-mock-stream:
+    build: ./lsl-mock-stream
+    restart: unless-stopped
+    network_mode: host
+    init: true
+    profiles:
+      - mock
+
   grafana:
     image: grafana/grafana:latest
     restart: unless-stopped

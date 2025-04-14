@@ -2,7 +2,7 @@
 This is a simple compose project that receives EEG data from a LSL stream (type==eeg), writes that into a TimescaleDB database, which is then queried by Grafana to show the data feed live in a dashboard.
 
 ## How to run
-- Run `docker-compose up` to start the services.
+- Run `docker-compose up` to start the services. (`docker compose --profile mock up` if you want the sample data stream)
 - Open your browser and go to `http://localhost:3000` to access Grafana.
   - If you want to edit the dashboard, you can log in with the admin user `admin` and password `admin`.
 
