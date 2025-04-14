@@ -23,8 +23,8 @@
     "panels": [
       {
         "datasource": {
-          "type": "grafana-postgresql-datasource",
-          "uid": "beilskehcbev4b"
+          "type": "postgres",
+          "uid": "TimescaleDB"
         },
         "fieldConfig": {
           "defaults": {
@@ -142,7 +142,7 @@
       }
     ],
     "preload": false,
-    "refresh": "",
+    "refresh": "200ms",
     "schemaVersion": 41,
     "tags": [],
     "templating": {
@@ -153,6 +153,7 @@
       "to": "now"
     },
     "timepicker": {
+      "hidden": true,
       "refresh_intervals": [
         "100ms",
         "200ms",

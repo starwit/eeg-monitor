@@ -16,6 +16,7 @@ services:
   lsl-receiver:
     build: ./lsl-receiver
     restart: unless-stopped
+    network_mode: host
     environment:
       - DATABASE_URL=postgres://postgres:password@timescale:5432/eeg_monitor
     depends_on:
@@ -28,8 +29,13 @@ services:
       - "3000:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Viewer"
     volumes:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - timescale
 
