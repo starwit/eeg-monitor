@@ -52,7 +52,7 @@ This is an open source project intended to stay open source. It shall help & ins
 * Write bugfix - create a pull request
 
 Contributors so far:
-* [Dr. Nektaria Tagalidou](https://www.iao.fraunhofer.de/de/forschung/beitrag_05-kontrollraum-fuer-die-ki.html)
+* [Dr. Nektaria Tagalidou]([https://www.iao.fraunhofer.de/de/forschung/beitrag_05-kontrollraum-fuer-die-ki.html](https://blog.iao.fraunhofer.de/author/nektaria-tagalidou/))
 * [Michael Bui](https://www.iao.fraunhofer.de/de/forschung/beitrag_05-kontrollraum-fuer-die-ki.html)
 * [Florian Stanek](https://github.com/flonix8)
 * [Markus Zarbock](https://github.com/ztarbug)
